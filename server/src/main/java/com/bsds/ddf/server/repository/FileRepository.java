@@ -1,7 +1,6 @@
 package com.bsds.ddf.server.repository;
 
 import com.bsds.ddf.server.entities.UserFile;
-import com.bsds.ddf.server.entities.pk.FilePK;
 
 import org.springframework.data.repository.CrudRepository;
 
