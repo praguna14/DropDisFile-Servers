@@ -16,9 +16,9 @@ import lombok.NoArgsConstructor;
 public class UserFile {
 
   @Id
-  private String email;
+  private String username;
 
   private String fileName;
 
-  private String fileLocation;
+  private String content;
 }

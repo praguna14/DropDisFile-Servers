@@ -7,7 +7,7 @@ import org.springframework.data.repository.CrudRepository;
 import java.util.List;
 
 public interface FileRepository extends CrudRepository<UserFile, String> {
-  public List<UserFile> findAllFilesByEmail(String email);
+  public List<UserFile> findAllFilesByUsername(String username);
 
-  public UserFile findFirstByEmailAndFileName(String email, String fileName);
+  public UserFile findFirstByUsernameAndFileName(String email, String fileName);
 }
