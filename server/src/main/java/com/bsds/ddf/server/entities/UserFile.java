@@ -2,6 +2,7 @@ package com.bsds.ddf.server.entities;
 
 import javax.persistence.Entity;
 import javax.persistence.Id;
+import javax.persistence.IdClass;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
@@ -13,11 +14,13 @@ import lombok.NoArgsConstructor;
 @NoArgsConstructor
 @AllArgsConstructor
 @Builder
+@IdClass(UserFileCompositeKey.class)
 public class UserFile {
 
   @Id
   private String username;
 
+  @Id
   private String fileName;
 
   private String content;
