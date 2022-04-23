@@ -1,6 +1,7 @@
 package com.bsds.ddf.server.service;
 
 import com.bsds.ddf.server.entities.UserFile;
+import com.bsds.ddf.server.paxos.RequestKey;
 import com.bsds.ddf.server.repository.FileRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
