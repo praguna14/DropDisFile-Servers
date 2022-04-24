@@ -4,26 +4,23 @@ import com.bsds.ddf.server.service.RestService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.boot.autoconfigure.web.ServerProperties;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
-import org.springframework.context.ApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.DependsOn;
-import org.springframework.stereotype.Component;
+import org.springframework.context.annotation.Scope;
+import org.springframework.context.annotation.ScopedProxyMode;
+import org.springframework.web.context.WebApplicationContext;
 import org.springframework.web.context.annotation.RequestScope;
+import org.springframework.web.context.request.RequestContextListener;
 
 import java.util.List;
 
 @Configuration
 public class PaxosInitializer {
 
-  @Autowired
-  private ServletWebServerApplicationContext webServerAppCtxt;
-
   @Bean("serverPort")
-  public int getServerPort(ServletWebServerApplicationContext webServerAppCtxt){
+  public int getServerPort(ServletWebServerApplicationContext webServerAppCtxt) {
     return webServerAppCtxt.getWebServer().getPort();
   }
 
@@ -33,9 +30,14 @@ public class PaxosInitializer {
     return serverPort + 1000;
   }
 
-  @Bean("allPorts")
-  @RequestScope
-  public List<Integer> getAllPorts(RestService restService) {
-    return restService.getServers();
+  @Bean
+  public RequestContextListener requestContextListener(){
+    return new RequestContextListener();
   }
+
+//  @Bean("allPorts")
+//  @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
+//  public List<Integer> getAllPorts(RestService restService) {
+//    return restService.getServers();
+//  }
 }

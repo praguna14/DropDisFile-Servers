@@ -4,7 +4,9 @@ import com.bsds.ddf.server.paxos.Acceptor;
 import com.bsds.ddf.server.paxos.Learner;
 import com.bsds.ddf.server.paxos.Proposer;
 
+import org.apache.catalina.Server;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.ApplicationListener;
 import org.springframework.context.event.ContextRefreshedEvent;
@@ -28,12 +30,15 @@ public class ApplicationStartupListener implements
   @Autowired
   Learner learner;
 
-  @Value("${server.port}")
-  private String webServerPort;
+  @Autowired
+  @Qualifier("rmiPort")
+  private Integer webServerPort;
 
   @Override
   public void onApplicationEvent(ContextRefreshedEvent event) {
 // Object to handle client requests.
+
+    ServerLogger.init(String.valueOf(webServerPort));
     try {
       Proposer proposerStub = (Proposer) UnicastRemoteObject.exportObject(proposer, 0);
       ServerLogger.log("Proposer Stub object created");
@@ -43,7 +48,7 @@ public class ApplicationStartupListener implements
       ServerLogger.log("Learner Stub object created");
 
       // create registry on the port provided
-      int port = Integer.parseInt(webServerPort);
+      int port = webServerPort;
       Registry registry = LocateRegistry.createRegistry(port);
       ServerLogger.log("Registry object created");
 

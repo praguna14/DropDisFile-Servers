@@ -13,15 +13,14 @@ import java.rmi.registry.Registry;
 import java.util.List;
 
 @Component
-@DependsOn({"allPorts"})
 public class MessengerImpl implements Messenger {
   private String webServerPort;
   private List<Integer> allPorts;
 
   private int quorumSize;
 
-  public MessengerImpl(@Qualifier("allPorts") List<Integer> allPorts, @Qualifier("rmiPort") int webServerPort) {
-    this.allPorts = allPorts;
+  public MessengerImpl(AllServers allServers, @Qualifier("rmiPort") int webServerPort) {
+    this.allPorts = allServers.getAllPorts();
     this.webServerPort = String.valueOf(webServerPort);
     quorumSize = ((allPorts.size() + 1) / 2) + 1;
   }

@@ -22,8 +22,6 @@ import java.util.concurrent.atomic.AtomicReference;
 
 @Component
 public class RequestHandler {
-  @Value("${server.port}")
-  private int webServerPort;
 
   @Autowired
   private Proposer proposer;

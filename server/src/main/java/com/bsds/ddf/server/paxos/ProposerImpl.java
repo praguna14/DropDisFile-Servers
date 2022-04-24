@@ -31,11 +31,11 @@ public class ProposerImpl implements Proposer {
   protected Map<RequestKey, Set<String>> promisesReceivedMap = new ConcurrentHashMap<>();
 
   @Autowired
-  private ProposerImpl(Messenger messenger, @Value("${server.port}") String proposerUID,
-                       @Qualifier("allPorts") List<Integer> allPorts) {
+  private ProposerImpl(Messenger messenger, @Qualifier("rmiPort") Integer proposerUID,
+                       @Qualifier("allServers") AllServers allServers) {
     this.messenger = messenger;
-    this.proposerUID = proposerUID;
-    this.quorumSize = ((allPorts.size() + 1) / 2) + 1;
+    this.proposerUID = String.valueOf(proposerUID);
+    this.quorumSize = ((allServers.getAllPorts().size() + 1) / 2) + 1;
   }
 
   @Override

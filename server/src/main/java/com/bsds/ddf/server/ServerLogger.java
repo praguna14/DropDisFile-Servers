@@ -22,6 +22,7 @@ public class ServerLogger {
     currUID = UID;
   }
 
+
   public static void log(String message) {
     FileOutputStream fos = null;
     try {

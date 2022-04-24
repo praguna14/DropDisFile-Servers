@@ -1,9 +1,11 @@
 package com.bsds.ddf.server.controller;
 
 import com.bsds.ddf.server.entities.UserFile;
+import com.bsds.ddf.server.paxos.AllServers;
 import com.bsds.ddf.server.service.FileService;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,9 +19,13 @@ import java.util.List;
 
 @RestController
 public class FileController {
-
-  @Autowired
   private FileService fileService;
+  private AllServers allServers;
+
+  public FileController(FileService fileService, AllServers allServers){
+    this.fileService = fileService;
+    this.allServers = allServers;
+  }
 
   //Gets all files for a user
   @GetMapping("/files")
@@ -39,6 +45,7 @@ public class FileController {
   @PostMapping("/file")
   @ResponseBody
   public UserFile addFile(@RequestBody UserFile file) throws Exception {
+    int size = allServers.getAllPorts().size();
     fileService.addUserFile(file);
 
     return fileService.getFile(file.getFileName(), file.getUsername());
