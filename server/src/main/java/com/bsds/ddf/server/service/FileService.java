@@ -3,7 +3,6 @@ package com.bsds.ddf.server.service;
 import com.bsds.ddf.server.entities.UserFile;
 import com.bsds.ddf.server.repository.FileRepository;
 
-import org.apache.catalina.User;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
@@ -19,8 +18,7 @@ public class FileService {
     return fileRepository.findAllFilesByUsername(username);
   }
 
-
-  public UserFile addUserFile(UserFile userFile) throws Exception {
+  public UserFile addUserFile(UserFile userFile) {
     return fileRepository.save(userFile);
   }
 
@@ -37,4 +35,5 @@ public class FileService {
     UserFile fileToRename = fileRepository.findFirstByUsernameAndFileName(username, fileName);
     fileRepository.save(fileToRename);
   }
+
 }
