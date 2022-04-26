@@ -4,6 +4,7 @@ import com.bsds.ddf.server.service.RestService;
 
 import org.springframework.stereotype.Component;
 
+import java.util.ArrayList;
 import java.util.List;
 
 @Component
@@ -13,7 +14,12 @@ public class AllServers {
 
   public AllServers(RestService restService) {
     this.restService = restService;
-    allPorts = restService.getServers();
+    List<Integer> servers = restService.getServers();
+    if(servers != null){
+      allPorts = restService.getServers();
+    } else{
+      allPorts = new ArrayList<>();
+    }
   }
 
   public List<Integer> getAllPorts() {

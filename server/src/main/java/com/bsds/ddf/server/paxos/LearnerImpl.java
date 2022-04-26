@@ -141,7 +141,7 @@ public class LearnerImpl implements Learner {
       if (value != null)
         saveFile(value);
       else
-        deleteFile(value);
+        deleteFile(key.getUsername(), key.getFileName());
 
       updateRequestHandlerState(requestUUID);
 
@@ -177,7 +177,7 @@ public class LearnerImpl implements Learner {
     fileService.addUserFile(file);
   }
 
-  private void deleteFile(UserFile file) {
-    fileService.deleteFileForUser(file.getUsername(), file.getFileName());
+  private void deleteFile(String userName, String fileName) {
+    fileService.deleteFileForUser(userName, fileName);
   }
 }
