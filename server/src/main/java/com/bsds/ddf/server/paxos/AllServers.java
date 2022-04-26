@@ -1,5 +1,6 @@
 package com.bsds.ddf.server.paxos;
 
+import com.bsds.ddf.server.ServerLogger;
 import com.bsds.ddf.server.service.RestService;
 
 import org.springframework.stereotype.Component;
@@ -14,7 +15,12 @@ public class AllServers {
 
   public AllServers(RestService restService) {
     this.restService = restService;
-    List<Integer> servers = restService.getServers();
+    List<Integer> servers = null;
+    try {
+      servers = restService.getServers();
+    } catch(Exception e){
+      System.out.println("Error occurred while hitting CMS:"+e.getMessage());
+    }
     if(servers != null){
       allPorts = restService.getServers();
     } else{
@@ -27,6 +33,14 @@ public class AllServers {
   }
 
   public void refreshServers() {
-    allPorts = restService.getServers();
+    List<Integer> servers = null;
+    try {
+      servers = restService.getServers();
+    } catch(Exception e){
+      ServerLogger.log("Error occurred while hitting CMS:"+e.getMessage());
+    }
+    if(servers != null){
+      allPorts = restService.getServers();
+    }
   }
 }

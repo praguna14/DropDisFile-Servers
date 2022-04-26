@@ -14,12 +14,9 @@ public class ServerLogger {
   private static File logFile = null;
   private static String currUID;
 
-  static {
-    logFile = new File("LogsFromServer.txt");
-  }
-
   public static void init(String UID) {
     currUID = UID;
+    logFile = new File(String.format("LogsFromServer-%s.txt", UID));
   }
 
 
@@ -33,7 +30,7 @@ public class ServerLogger {
       fos.write(message.getBytes());
       fos.close();
     } catch (FileNotFoundException ex) {
-      logFile = new File("LogsFromServer.txt");
+      logFile = new File(String.format("LogsFromServer-%s.txt", currUID));
       log(message);
     } catch (IOException e) {
       System.out.println("Failed due to IOException" + e.getMessage());
