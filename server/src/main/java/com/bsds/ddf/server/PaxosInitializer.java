@@ -4,6 +4,7 @@ import com.bsds.ddf.server.service.RestService;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.boot.web.servlet.context.ServletWebServerApplicationContext;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -19,9 +20,13 @@ import java.util.List;
 @Configuration
 public class PaxosInitializer {
 
+  @Value("${server.port}")
+  private String port;
+
+
   @Bean("serverPort")
   public int getServerPort(ServletWebServerApplicationContext webServerAppCtxt) {
-    return webServerAppCtxt.getWebServer().getPort();
+    return Integer.parseInt(port);
   }
 
   @Bean("rmiPort")

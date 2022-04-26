@@ -31,7 +31,7 @@ public class ServerLogger {
       fos.close();
     } catch (FileNotFoundException ex) {
       logFile = new File(String.format("LogsFromServer-%s.txt", currUID));
-      log(message);
+      System.out.println(message);
     } catch (IOException e) {
       System.out.println("Failed due to IOException" + e.getMessage());
     }
