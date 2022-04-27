@@ -19,10 +19,10 @@ public class ScheduledTasks {
 
   private static final SimpleDateFormat dateFormat = new SimpleDateFormat("HH:mm:ss");
 
-  @Scheduled(fixedRate = 2000)
+  @Scheduled(fixedRate = 20000)
   public void reportCurrentTime() {
 //    log.info("Servers refreshed. The time is now {}", dateFormat.format(new Date()));
     allServers.refreshServers();
-    log.info("Total Servers:  {}", allServers.getAllPorts().size());
+//    log.info("Total Servers:  {}", allServers.getAllPorts().size());
   }
 }

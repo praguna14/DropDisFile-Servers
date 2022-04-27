@@ -1,104 +1,110 @@
 package com.bsds.ddf.server.paxos;
 
+import com.bsds.ddf.server.ServerLogger;
 import com.bsds.ddf.server.entities.UserFile;
+import com.bsds.ddf.server.pojo.AcceptRequestPojo;
+import com.bsds.ddf.server.pojo.AcceptedRequestPojo;
+import com.bsds.ddf.server.pojo.CommitRequestPojo;
+import com.bsds.ddf.server.pojo.PreparePojo;
+import com.bsds.ddf.server.pojo.PromisePOJO;
+import com.bsds.ddf.server.service.RestService;
 
 import org.springframework.beans.factory.annotation.Qualifier;
-import org.springframework.context.annotation.DependsOn;
 import org.springframework.stereotype.Component;
 
 import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
-import java.rmi.registry.LocateRegistry;
-import java.rmi.registry.Registry;
 import java.util.List;
 
 @Component
 public class MessengerImpl implements Messenger {
   private String webServerPort;
-  private List<Integer> allPorts;
+  private AllServers allServers;
+  private RestService restService;
 
   private int quorumSize;
 
-  public MessengerImpl(AllServers allServers, @Qualifier("rmiPort") int webServerPort) {
-    this.allPorts = allServers.getAllPorts();
+  public MessengerImpl(AllServers allServers, @Qualifier("serverPort") int webServerPort, RestService restService) {
+    this.allServers = allServers;
+    this.restService = restService;
+    List<Integer> allPorts = allServers.getAllPorts();
     this.webServerPort = String.valueOf(webServerPort);
-    quorumSize = ((allPorts.size() + 1) / 2) + 1;
+    quorumSize = ((allPorts.size()) / 2) + 1;
   }
 
   @Override
   public void sendPrepare(RequestKey key, ProposalID proposalID, String requestUUID) throws NotBoundException, RemoteException {
-    Acceptor acceptor = getAcceptor(Integer.parseInt(webServerPort));
-    acceptor.receivePrepare(key, webServerPort, proposalID, requestUUID);
-
+    PreparePojo request = PreparePojo.builder()
+            .key(key)
+            .fromUID(webServerPort)
+            .proposalID(proposalID)
+            .requestUUID(requestUUID)
+            .build();
+    List<Integer> allPorts = allServers.getAllPorts();
     for (Integer port : allPorts) {
-      getAcceptor(port).receivePrepare(key, webServerPort, proposalID, requestUUID);
+      ServerLogger.log(String.format("Sending sendPrepare to %d", port));
+      restService.sendPrepare(request, port);
     }
   }
 
   @Override
   public void sendPromise(RequestKey key, String proposerUID, ProposalID proposalID, ProposalID previousID,
                           UserFile acceptedValue, String requestUUID) throws NotBoundException, RemoteException {
-    Proposer proposer = getProposer(Integer.parseInt(proposerUID));
-    proposer.receivePromise(key, webServerPort, proposalID, previousID, acceptedValue, requestUUID);
+    ServerLogger.log(String.format("Sending sendAccepted to %s", proposerUID));
+    PromisePOJO request = PromisePOJO.builder()
+            .key(key)
+            .fromUID(webServerPort)
+            .proposalID(proposalID)
+            .prevAcceptedID(previousID)
+            .prevAcceptedValue(acceptedValue)
+            .requestUUID(requestUUID)
+            .build();
+    restService.sendPromise(request, Integer.parseInt(proposerUID));
   }
 
   @Override
   public void sendAccept(RequestKey key, ProposalID proposalID, UserFile proposalValue, String requestUUID) throws NotBoundException, RemoteException {
-    Acceptor acceptor = getAcceptor(Integer.parseInt(webServerPort));
-    acceptor.receivePrepare(key, webServerPort, proposalID, requestUUID);
-
+    List<Integer> allPorts = allServers.getAllPorts();
+    AcceptRequestPojo request = AcceptRequestPojo.builder()
+            .key(key)
+            .fromUID(webServerPort)
+            .proposalID(proposalID)
+            .value(proposalValue)
+            .requestUUID(requestUUID)
+            .build();
     for (Integer port : allPorts) {
-      getAcceptor(port).receiveAcceptRequest(key, webServerPort, proposalID, proposalValue, requestUUID);
+      ServerLogger.log(String.format("Sending sendAccept to %d", port));
+      restService.sendAccept(request, port);
     }
   }
 
   @Override
   public void sendAccepted(RequestKey key, ProposalID proposalID, UserFile acceptedValue, String requestUUID) throws NotBoundException, RemoteException {
-    Learner learner = getLearner(Integer.parseInt(webServerPort));
-    learner.receiveAccepted(key, webServerPort, proposalID, acceptedValue, requestUUID);
-
+    AcceptedRequestPojo request = AcceptedRequestPojo.builder()
+            .key(key)
+            .fromUID(webServerPort)
+            .proposalID(proposalID)
+            .acceptedValue(acceptedValue)
+            .requestUUID(requestUUID)
+            .build();
+    List<Integer> allPorts = allServers.getAllPorts();
     for (Integer port : allPorts) {
-      getLearner(port).receiveAccepted(key, webServerPort, proposalID, acceptedValue, requestUUID);
+      ServerLogger.log(String.format("Sending sendAccepted to %d", port));
+      restService.sendAccepted(request, port);
     }
   }
 
   @Override
   public void onResolution(RequestKey key, ProposalID proposalID, UserFile value, String requestUUID) throws NotBoundException, RemoteException {
-    Learner learner = getLearner(Integer.parseInt(webServerPort));
-    learner.commit(key, value, requestUUID);
-
+    CommitRequestPojo request = CommitRequestPojo.builder()
+            .key(key)
+            .value(value)
+            .requestUUID(requestUUID)
+            .build();
+    List<Integer> allPorts = allServers.getAllPorts();
     for (Integer port : allPorts) {
-      getLearner(port).commit(key, value, requestUUID);
+      ServerLogger.log(String.format("Sending onResolution to %d", port));
+      restService.sendCommit(request,port);
     }
-  }
-
-  private Proposer getProposer(Integer port) throws NotBoundException, RemoteException {
-    int serverPort = allPorts.stream()
-            .filter(uid -> uid.equals(port))
-            .findFirst().get();
-
-    Registry registry = LocateRegistry.getRegistry(serverPort);
-    // Lookup the remote object on the host
-    return (Proposer) registry.lookup("proposer");
-  }
-
-  private Acceptor getAcceptor(Integer port) throws NotBoundException, RemoteException {
-    int serverPort = allPorts.stream()
-            .filter(uid -> uid.equals(port))
-            .findFirst().get();
-
-    Registry registry = LocateRegistry.getRegistry(serverPort);
-    // Lookup the remote object on the host
-    return (Acceptor) registry.lookup("acceptor");
-  }
-
-  private Learner getLearner(Integer port) throws RemoteException, NotBoundException {
-    int serverPort = allPorts.stream()
-            .filter(uid -> uid.equals(port))
-            .findFirst().get();
-
-    Registry registry = LocateRegistry.getRegistry(serverPort);
-    // Lookup the remote object on the host
-    return (Learner) registry.lookup("learner");
   }
 }

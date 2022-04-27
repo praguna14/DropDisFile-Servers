@@ -31,7 +31,7 @@ public class ProposerImpl implements Proposer {
   protected Map<RequestKey, Set<String>> promisesReceivedMap = new ConcurrentHashMap<>();
 
   @Autowired
-  private ProposerImpl(Messenger messenger, @Qualifier("rmiPort") Integer proposerUID,
+  private ProposerImpl(Messenger messenger, @Qualifier("serverPort") Integer proposerUID,
                        @Qualifier("allServers") AllServers allServers) {
     this.messenger = messenger;
     this.proposerUID = String.valueOf(proposerUID);

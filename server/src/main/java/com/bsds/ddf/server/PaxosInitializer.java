@@ -28,21 +28,4 @@ public class PaxosInitializer {
   public int getServerPort(ServletWebServerApplicationContext webServerAppCtxt) {
     return Integer.parseInt(port);
   }
-
-  @Bean("rmiPort")
-  @DependsOn({"serverPort"})
-  public int getRMIPort(@Qualifier("serverPort") int serverPort) {
-    return serverPort + 1000;
-  }
-
-  @Bean
-  public RequestContextListener requestContextListener(){
-    return new RequestContextListener();
-  }
-
-//  @Bean("allPorts")
-//  @Scope(value = WebApplicationContext.SCOPE_REQUEST, proxyMode = ScopedProxyMode.TARGET_CLASS)
-//  public List<Integer> getAllPorts(RestService restService) {
-//    return restService.getServers();
-//  }
 }

@@ -22,16 +22,7 @@ public class ApplicationStartupListener implements
         ApplicationListener<ContextRefreshedEvent> {
 
   @Autowired
-  Proposer proposer;
-
-  @Autowired
-  Acceptor acceptor;
-
-  @Autowired
-  Learner learner;
-
-  @Autowired
-  @Qualifier("rmiPort")
+  @Qualifier("serverPort")
   private Integer webServerPort;
 
   @Override
@@ -39,27 +30,5 @@ public class ApplicationStartupListener implements
 // Object to handle client requests.
 
     ServerLogger.init(String.valueOf(webServerPort));
-    try {
-      Proposer proposerStub = (Proposer) UnicastRemoteObject.exportObject(proposer, 0);
-      ServerLogger.log("Proposer Stub object created");
-      Acceptor acceptorStub = (Acceptor) UnicastRemoteObject.exportObject(acceptor, 0);
-      ServerLogger.log("Acceptor Stub object created");
-      Learner learnerStub = (Learner) UnicastRemoteObject.exportObject(learner, 0);
-      ServerLogger.log("Learner Stub object created");
-
-      // create registry on the port provided
-      int port = webServerPort;
-      Registry registry = LocateRegistry.createRegistry(port);
-      ServerLogger.log("Registry object created");
-
-      registry.rebind("proposer", proposerStub);
-      ServerLogger.log("proposer Object bound to registry");
-      registry.rebind("acceptor", acceptorStub);
-      ServerLogger.log("acceptor Object bound to registry");
-      registry.rebind("learner", learnerStub);
-      ServerLogger.log("learner Object bound to registry");
-    } catch (RemoteException e) {
-      ServerLogger.log(String.format("Start Server failed due to : %s", e.getMessage()));
-    }
   }
 }
