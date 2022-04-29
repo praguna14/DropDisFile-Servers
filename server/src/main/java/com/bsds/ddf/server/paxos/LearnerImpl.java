@@ -138,10 +138,10 @@ public class LearnerImpl implements Learner {
       String message = String.format("Learner.commit(key=%s, value=%s)"
               , key, value);
       ServerLogger.log(message);
-      if (value != null)
+      if (!isEmptyFile(value))
         saveFile(value);
       else
-        deleteFile(key.getUsername(), key.getFileName());
+        deleteFile(key.getUsername(), key.getFilename());
 
       updateRequestHandlerState(requestUUID);
 
@@ -179,5 +179,9 @@ public class LearnerImpl implements Learner {
 
   private void deleteFile(String userName, String fileName) {
     fileService.deleteFileForUser(userName, fileName);
+  }
+
+  private boolean isEmptyFile(UserFile file){
+    return file.getContent() == null || file.getContent().equals("");
   }
 }

@@ -10,5 +10,5 @@ import lombok.Data;
 public class RequestKey implements Serializable {
   private String username;
 
-  private String fileName;
+  private String filename;
 }

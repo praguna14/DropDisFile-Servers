@@ -54,7 +54,7 @@ public class RequestHandler {
 
       if (request.getRequestType().equals("DELETE")) {
         RequestKey key = request.getKey();
-        if (!checkIfFilePresent(key.getUsername(), key.getFileName())) {
+        if (!checkIfFilePresent(key.getUsername(), key.getFilename())) {
           Response responseContent  = Response.builder()
                   .successful(false)
                   .value("Key requested to be deleted not present")
@@ -65,7 +65,8 @@ public class RequestHandler {
 
       if (response.get() == null) {
         try {
-          UserFile value = (request.getRequestType().equals("PUT") ? request.getValue() : null);
+          UserFile emptyFile = new UserFile();
+          UserFile value = (request.getRequestType().equals("PUT") ? request.getValue() : emptyFile);
           proposer.setProposal(request.getKey(), value);
         } catch (RemoteException e) {
           successful = false;
@@ -128,6 +129,6 @@ public class RequestHandler {
 
   private boolean checkIfFilePresent(String userName, String fileName){
     UserFile userFile = fileService.getFile(fileName, userName);
-    return userFile == null;
+    return userFile != null;
   }
 }

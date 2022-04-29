@@ -45,7 +45,7 @@ public class AcceptorImpl implements Acceptor {
 
       ProposalID promisedID = promisedIDMap.getOrDefault(key, null);
       ProposalID acceptedID = acceptedIDMap.getOrDefault(key, null);
-      UserFile acceptedValue = acceptedValueMap.getOrDefault(key, null);
+      UserFile acceptedValue = null;
 
       try {
         if (promisedID != null && proposalID.equals(promisedID)) { // duplicate message

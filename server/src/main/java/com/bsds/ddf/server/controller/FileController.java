@@ -51,14 +51,14 @@ public class FileController {
   public UserFile addFile(@RequestBody UserFile file) throws Exception {
     Request request = Request.builder()
             .requestType("PUT")
-            .key(new RequestKey(file.getUsername(), file.getFileName()))
+            .key(new RequestKey(file.getUsername(), file.getFilename()))
             .value(file)
             .build();
 
     Response response = this.requestHandler.processRequest(request);
 
     if(response.getSuccessful()){
-      return fileService.getFile(file.getFileName(), file.getUsername());
+      return fileService.getFile(file.getFilename(), file.getUsername());
     } else{
       throw new Exception("Could not save file");
     }

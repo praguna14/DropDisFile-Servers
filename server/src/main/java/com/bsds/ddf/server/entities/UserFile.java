@@ -21,7 +21,7 @@ public class UserFile {
   private String username;
 
   @Id
-  private String fileName;
+  private String filename;
 
   private String content;
 }

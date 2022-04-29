@@ -1,12 +1,14 @@
 package com.bsds.ddf.server.service;
 
 import com.bsds.ddf.server.entities.UserFile;
+import com.bsds.ddf.server.entities.UserFileCompositeKey;
 import com.bsds.ddf.server.repository.FileRepository;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
+import java.util.Optional;
 
 @Service
 public class FileService {
@@ -23,16 +25,25 @@ public class FileService {
   }
 
   public UserFile getFile(String fileName, String username){
-    return fileRepository.findFirstByUsernameAndFileName(username, fileName);
+    List<UserFile> allFiles = getAllFiles(username);
+
+    Optional<UserFile> userFileOptional =  allFiles.stream().filter(file -> file.getFilename().equals(fileName))
+            .findFirst();
+
+    if(userFileOptional.isPresent()){
+      return userFileOptional.get();
+    } else{
+      return null;
+    }
   }
 
   public void deleteFileForUser(String username, String fileName) {
-    UserFile fileToDelete = fileRepository.findFirstByUsernameAndFileName(username, fileName);
+    UserFile fileToDelete = getFile(fileName, username);
     fileRepository.delete(fileToDelete);
   }
 
   public void renameFileForUser(String username, String fileName, String newFileName) {
-    UserFile fileToRename = fileRepository.findFirstByUsernameAndFileName(username, fileName);
+    UserFile fileToRename = getFile(username, fileName);
     fileRepository.save(fileToRename);
   }
 
