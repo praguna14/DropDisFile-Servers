@@ -1,5 +1,6 @@
 package com.bsds.ddf.server.service;
 
+import com.bsds.ddf.server.entities.UserFile;
 import com.bsds.ddf.server.pojo.AcceptRequestPojo;
 import com.bsds.ddf.server.pojo.AcceptedRequestPojo;
 import com.bsds.ddf.server.pojo.CommitRequestPojo;
@@ -70,6 +71,11 @@ public class RestService {
     } catch(Exception ex){
       System.out.println("Error while sending request:"+url);
     }
+  }
+
+  public List<UserFile> fetchAllFiles(Integer port){
+    String url = String.format("http://localhost:%d/files/all", port);
+    return Arrays.asList(this.restTemplate.getForObject(url, UserFile[].class));
   }
 
 }

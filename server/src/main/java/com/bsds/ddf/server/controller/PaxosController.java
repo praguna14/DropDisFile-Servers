@@ -10,6 +10,7 @@ import com.bsds.ddf.server.pojo.PreparePojo;
 import com.bsds.ddf.server.pojo.PromisePOJO;
 
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
@@ -18,6 +19,7 @@ import java.rmi.NotBoundException;
 import java.rmi.RemoteException;
 
 @RestController
+@CrossOrigin(origins="*")
 public class PaxosController {
 
   private Learner learner;

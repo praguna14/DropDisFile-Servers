@@ -8,6 +8,7 @@ import com.bsds.ddf.server.paxos.RequestKey;
 import com.bsds.ddf.server.paxos.Response;
 import com.bsds.ddf.server.service.FileService;
 
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -20,6 +21,7 @@ import org.springframework.web.bind.annotation.RestController;
 import java.util.List;
 
 @RestController
+@CrossOrigin(origins="*")
 public class FileController {
   private FileService fileService;
   private AllServers allServers;
@@ -67,10 +69,10 @@ public class FileController {
   //Deletes a file for the user
   @DeleteMapping("/delete")
   @ResponseBody
-  public void getAllFiles(@RequestParam String username, @RequestParam String fileName) throws Exception {
+  public void getAllFiles(@RequestParam String username, @RequestParam String filename) throws Exception {
     Request request = Request.builder()
             .requestType("DELETE")
-            .key(new RequestKey(username, fileName))
+            .key(new RequestKey(username, filename))
             .build();
 
     Response response = this.requestHandler.processRequest(request);
@@ -86,5 +88,11 @@ public class FileController {
   public void renameFile(@RequestParam String username, @RequestParam String fileName, @RequestParam String newFileName) {
     //TO DO
     fileService.renameFileForUser(username, fileName, newFileName);
+  }
+
+  @GetMapping("/files/all")
+  @ResponseBody
+  public List<UserFile> fetchAllFiles(){
+    return fileService.getAllDBFiles();
   }
 }
